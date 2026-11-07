@@ -2,16 +2,16 @@
 
 :root {
   font-family: 'DM Sans', sans-serif;
-  color: #25283a;
-  background: #f7f8fc;
+  color: #35252c;
+  background: #faf7f8;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   font-smooth: always;
-  --ink: #25283a;
-  --muted: #8d91a5;
-  --line: #eceef4;
-  --purple: #7765db;
-  --purple-dark: #6654c5;
+  --ink: #35252c;
+  --muted: #907c83;
+  --line: #f3e5e9;
+  --purple: #b8325c;
+  --purple-dark: #9e294d;
 }
 
 * { box-sizing: border-box; }
@@ -21,7 +21,7 @@ button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: .6; }
 .app-shell { min-height: 100vh; }
 .sidebar { background: #fff; border-right: 1px solid #eef0f5; bottom: 0; display: flex; flex-direction: column; left: 0; padding: 28px 20px 16px; position: fixed; top: 0; width: 254px; z-index: 3; }
-.brand { align-items: center; color: #25283a; display: flex; font: 800 24px Manrope, sans-serif; gap: 10px; letter-spacing: -1.5px; text-decoration: none; }
+.brand { align-items: center; color: #35252c; display: flex; font: 800 24px Manrope, sans-serif; gap: 10px; letter-spacing: -1.5px; text-decoration: none; }
 .brand-dot { color: #8979e7; }
 .brand-mark { align-items: center; background: #7d6be2; border-radius: 9px; display: flex; height: 30px; justify-content: center; position: relative; transform: rotate(-5deg); width: 30px; }
 .brand-mark:before, .brand-mark:after, .brand-mark span { background: #fff; border-radius: 3px; content: ''; display: block; position: absolute; transform: rotate(5deg); }
@@ -72,7 +72,7 @@ h1 { color: #272a3c; font: 700 25px Manrope, sans-serif; letter-spacing: -.8px; 
 .wave { color: #edb45f; font-size: 19px; margin-left: 3px; }
 .heading-subtitle { color: #9699aa; font-size: 11px; margin-bottom: 0; }
 .button { align-items: center; border: 1px solid transparent; border-radius: 8px; display: inline-flex; font-size: 11px; font-weight: 600; gap: 7px; justify-content: center; min-height: 37px; padding: 0 14px; transition: .16s ease; }
-.button-primary { background: #7765d8; box-shadow: 0 3px 8px #7765d822; color: #fff; }
+.button-primary { background: #b8325c; box-shadow: 0 3px 8px #b8325c20; color: #fff; }
 .button-primary:hover { background: #6957c7; transform: translateY(-1px); }
 .button-quiet { background: #fff; border-color: #e8e9f0; color: #626579; }
 .button-small { min-height: 32px; padding: 0 12px; }
@@ -253,4 +253,100 @@ h1 { color: #272a3c; font: 700 25px Manrope, sans-serif; letter-spacing: -.8px; 
   .donut { height: 84px; width: 84px; }
   .donut:before { height: 64px; width: 64px; }
   .legend-item { font-size: 9px; }
+}
+
+body { background: #faf7f8; color: #35252c; }
+.sidebar { border-color: #eee5e8; }
+.brand-dot, .text-button, .help-card button, .row-action { color: #b8325c; }
+.brand-mark, .button-primary { background: #b8325c; }
+.button-primary { box-shadow: 0 3px 8px #b8325c20; }
+.button-primary:hover { background: #9e294d; }
+.school-switcher, .help-card { background: #fcf8f9; border-color: #eee5e8; }
+.school-avatar, .help-icon, .nav-count { background: #f9e9ee; color: #a82d52; }
+.nav-item:hover { background: #fcf5f7; color: #9e294d; }
+.nav-item.active { background: #f9e9ee; color: #9e294d; }
+.topbar { background: rgba(255,255,255,.96); border-color: #eee5e8; }
+.top-search, .table-search { background: #fcfafb; border-color: #eee5e8; }
+.notification-button i { background: #c9446b; }
+.top-divider { background: #eee5e8; }
+.profile-avatar, .top-avatar { background: linear-gradient(145deg, #f5d2dc, #e9a6b9); color: #70263e; }
+.wave { color: #c9446b; }
+.lavender, .mint, .peach, .blue { background: #f9edf1; color: #b8325c; }
+.stat-decoration, .stat-decoration:after { border-color: #f6e9ed; }
+.donut { background: conic-gradient(#c9446b var(--rate), #f3e9ec 0); }
+.quick-action:hover, .attendance-choice:hover { background: #fcf5f7; }
+.inline-count { background: #f9e9ee; color: #a82d52; }
+.data-table th { background: #fbf8f9; border-color: #eee5e8; }
+.data-table td, .quick-action, .profile-row, .panel-footer { border-color: #f0e8eb; }
+.data-table tbody tr:hover { background: #fdfafb; }
+.avatar-0, .avatar-1, .avatar-2, .avatar-3, .avatar-4 { background: #f9edf1; color: #a83257; }
+.date-input, .attendance-choice { border-color: #eae1e5; }
+.form-grid input:focus, .form-grid select:focus, .date-input:focus, .top-search:focus-within, .table-search:focus-within {
+  border-color: #d58ba0;
+  box-shadow: 0 0 0 3px #b8325c14;
+}
+.modal-backdrop { background: #35252c66; }
+.modal { box-shadow: 0 20px 60px #35252c24; }
+.modal-actions { border-color: #eee5e8; }
+
+.sidebar { box-shadow: 2px 0 16px #35252c05; }
+.school-switcher, .help-card, .panel, .stat-card, .modal {
+  border-radius: 14px;
+}
+.panel, .stat-card {
+  border-color: #eee8eb;
+  box-shadow: 0 2px 8px #35252c05;
+}
+.content { padding-top: 40px; }
+.page-heading { margin-bottom: 28px; }
+h1 { color: #30232a; font-size: 28px; letter-spacing: -.9px; }
+.eyebrow { color: #8b727b; font-size: 10px; letter-spacing: 1.15px; }
+.heading-subtitle { color: #796a70; font-size: 13px; }
+.button { font-size: 12px; min-height: 40px; }
+.nav-item { font-size: 13px; }
+.school-copy strong, .help-card strong, .profile-copy strong { font-size: 12px; }
+.school-copy span, .profile-copy span, .help-card > span { font-size: 11px; }
+.nav-label { font-size: 10px; }
+.breadcrumbs { font-size: 12px; }
+.top-search input, .table-search input { font-size: 12px; }
+.top-search, .table-search { min-height: 38px; }
+.stat-card { min-height: 148px; padding: 18px; }
+.stat-icon, .quick-icon { height: 38px; width: 38px; }
+.stat-label { color: #6f6066; font-size: 12px; margin-top: 16px; }
+.stat-value { color: #30232a; font-size: 28px; }
+.stat-note { color: #84747a; font-size: 11px; }
+.panel-heading h2, .attendance-toolbar h2 { color: #35252c; font-size: 14px; }
+.panel-heading p, .attendance-toolbar p { color: #84747a; font-size: 11px; }
+.data-table th { color: #75646b; font-size: 10px; }
+.data-table td { color: #574950; font-size: 12px; padding-bottom: 13px; padding-top: 13px; }
+.student-cell strong, .guardian-cell strong { color: #35252c; font-size: 12px; }
+.student-cell small, .guardian-cell small { color: #806f76; font-size: 11px; }
+.status-pill, .attendance-choice { font-size: 11px; }
+.table-search { height: 38px; }
+.date-input { font-size: 12px; height: 38px; }
+.legend-item { font-size: 11px; }
+.legend-item strong { font-size: 11px; }
+.quick-action strong { color: #403039; font-size: 12px; }
+.quick-action small { color: #806f76; font-size: 11px; }
+.panel-footer { color: #75646b; font-size: 11px; }
+.text-button { font-size: 11px; }
+.app-footer { color: #806f76; font-size: 10px; }
+.form-grid label { color: #574950; font-size: 12px; }
+.form-grid input, .form-grid select { font-size: 13px; height: 40px; }
+.modal-heading h2 { color: #30232a; }
+.toast { background: #35252c; }
+.button:focus-visible, .nav-item:focus-visible, .icon-button:focus-visible,
+.quick-action:focus-visible, .text-button:focus-visible, .row-action:focus-visible,
+.attendance-choice:focus-visible, .help-card button:focus-visible {
+  outline: 3px solid #d58ba0;
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .content { padding-top: 27px; }
+  h1 { font-size: 23px; }
+  .stat-card { min-height: 132px; padding: 13px; }
+  .stat-label { font-size: 11px; }
+  .stat-value { font-size: 24px; }
+  .stat-note { font-size: 10px; }
 }

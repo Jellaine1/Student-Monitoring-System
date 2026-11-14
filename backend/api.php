@@ -62,6 +62,239 @@ try {
         respond($stmt->fetch());
     }
 
+    if ($resource === 'student-dashboard' && $method === 'GET') {
+        $studentId = filter_var($_GET['student_id'] ?? null, FILTER_VALIDATE_INT);
+        if (!$studentId || $studentId < 1) {
+            respond(['error' => 'A valid student id is required.'], 400);
+        }
+
+        $studentStmt = $pdo->prepare(
+            'SELECT id, first_name, last_name, email, grade_level, section, status
+             FROM students WHERE id = :id'
+        );
+        $studentStmt->execute(['id' => $studentId]);
+        $student = $studentStmt->fetch();
+        if (!$student) {
+            respond(['error' => 'Student not found.'], 404);
+        }
+
+        $summaryStmt = $pdo->prepare(
+            "SELECT COUNT(*) AS recorded_days,
+                    COALESCE(SUM(status = 'Present'), 0) AS present_days,
+                    COALESCE(SUM(status = 'Late'), 0) AS late_days,
+                    COALESCE(SUM(status = 'Absent'), 0) AS absent_days
+             FROM attendance WHERE student_id = :student_id"
+        );
+        $summaryStmt->execute(['student_id' => $studentId]);
+
+        $recentStmt = $pdo->prepare(
+            'SELECT attendance_date, status
+             FROM attendance WHERE student_id = :student_id
+             ORDER BY attendance_date DESC LIMIT 5'
+        );
+        $recentStmt->execute(['student_id' => $studentId]);
+
+        respond([
+            'student' => $student,
+            'summary' => $summaryStmt->fetch(),
+            'recent_attendance' => $recentStmt->fetchAll(),
+        ]);
+    }
+
+    if ($resource === 'projects') {
+        if ($method === 'GET') {
+            $studentId = null;
+            if (isset($_GET['student_id'])) {
+                $studentId = filter_var($_GET['student_id'], FILTER_VALIDATE_INT);
+                if (!$studentId || $studentId < 1) {
+                    respond(['error' => 'A valid student id is required.'], 400);
+                }
+                if (!studentExists($pdo, $studentId)) {
+                    respond(['error' => 'Student not found.'], 404);
+                }
+            }
+
+            $sql = 'SELECT p.id, p.title, p.subject, p.description, p.due_date, p.status, p.created_at,
+                           pa.student_id, pa.progress, pa.progress_note, pa.updated_at AS assignment_updated_at,
+                           s.first_name, s.last_name, s.grade_level, s.section
+                    FROM projects p
+                    LEFT JOIN project_assignments pa ON pa.project_id = p.id
+                    LEFT JOIN students s ON s.id = pa.student_id';
+            $parameters = [];
+            if ($studentId !== null) {
+                $sql .= ' WHERE pa.student_id = :student_id';
+                $parameters['student_id'] = $studentId;
+            }
+            $sql .= ' ORDER BY p.due_date ASC, p.created_at DESC, s.last_name ASC, s.first_name ASC';
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($parameters);
+
+            $projects = [];
+            while ($row = $stmt->fetch()) {
+                $id = (int)$row['id'];
+                if (!isset($projects[$id])) {
+                    $projects[$id] = [
+                        'id' => $id,
+                        'title' => $row['title'],
+                        'subject' => $row['subject'],
+                        'description' => $row['description'],
+                        'due_date' => $row['due_date'],
+                        'status' => $row['status'],
+                        'created_at' => $row['created_at'],
+                        'assignments' => [],
+                    ];
+                }
+                if ($row['student_id'] !== null) {
+                    $projects[$id]['assignments'][] = [
+                        'student_id' => (int)$row['student_id'],
+                        'first_name' => $row['first_name'],
+                        'last_name' => $row['last_name'],
+                        'grade_level' => $row['grade_level'],
+                        'section' => $row['section'],
+                        'progress' => (int)$row['progress'],
+                        'progress_note' => $row['progress_note'],
+                        'updated_at' => $row['assignment_updated_at'],
+                    ];
+                }
+            }
+            foreach ($projects as &$project) {
+                $project['assigned_count'] = count($project['assignments']);
+                $project['completed_count'] = count(array_filter(
+                    $project['assignments'],
+                    static fn(array $assignment): bool => $assignment['progress'] === 100
+                ));
+            }
+            unset($project);
+
+            respond(array_values($projects));
+        }
+
+        if ($method === 'POST') {
+            $data = requestBody();
+            $title = requiredString($data, 'title', 120);
+            $subject = requiredString($data, 'subject', 80);
+            $description = trim((string)($data['description'] ?? ''));
+            $dueDate = (string)($data['due_date'] ?? '');
+            $studentIds = $data['student_ids'] ?? null;
+            $dueDateObject = DateTime::createFromFormat('!Y-m-d', $dueDate);
+            if (!$dueDateObject || $dueDateObject->format('Y-m-d') !== $dueDate) {
+                respond(['error' => 'A valid project due date is required.'], 422);
+            }
+            if (mb_strlen($description) > 5000) {
+                respond(['error' => 'Project description must be at most 5000 characters.'], 422);
+            }
+            if (!is_array($studentIds) || count($studentIds) === 0 || count($studentIds) > 1000) {
+                respond(['error' => 'Assign the project to at least one active student.'], 422);
+            }
+
+            $studentIds = array_values(array_unique(array_map(
+                static function ($value): int {
+                    $id = filter_var($value, FILTER_VALIDATE_INT);
+                    if (!$id || $id < 1) {
+                        respond(['error' => 'Each assigned student must have a valid id.'], 422);
+                    }
+                    return $id;
+                },
+                $studentIds
+            )));
+            $placeholders = implode(',', array_fill(0, count($studentIds), '?'));
+            $activeStudentsStmt = $pdo->prepare(
+                "SELECT id FROM students WHERE status = 'Active' AND id IN ({$placeholders})"
+            );
+            $activeStudentsStmt->execute($studentIds);
+            if (count($activeStudentsStmt->fetchAll()) !== count($studentIds)) {
+                respond(['error' => 'Projects can only be assigned to active students.'], 422);
+            }
+
+            $pdo->beginTransaction();
+            $projectStmt = $pdo->prepare(
+                'INSERT INTO projects (title, subject, description, due_date)
+                 VALUES (:title, :subject, :description, :due_date)'
+            );
+            $projectStmt->execute([
+                'title' => $title,
+                'subject' => $subject,
+                'description' => $description !== '' ? $description : null,
+                'due_date' => $dueDate,
+            ]);
+            $projectId = (int)$pdo->lastInsertId();
+            $assignmentStmt = $pdo->prepare(
+                'INSERT INTO project_assignments (project_id, student_id) VALUES (:project_id, :student_id)'
+            );
+            foreach ($studentIds as $studentId) {
+                $assignmentStmt->execute(['project_id' => $projectId, 'student_id' => $studentId]);
+            }
+            $pdo->commit();
+            respond(['id' => $projectId, 'message' => 'Project created.'], 201);
+        }
+
+        if ($method === 'PUT') {
+            $projectId = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+            $status = requestBody()['status'] ?? '';
+            if (!$projectId || $projectId < 1) {
+                respond(['error' => 'A valid project id is required.'], 400);
+            }
+            if (!in_array($status, ['Active', 'Completed', 'Archived'], true)) {
+                respond(['error' => 'Project status must be Active, Completed, or Archived.'], 422);
+            }
+            $stmt = $pdo->prepare('UPDATE projects SET status = :status WHERE id = :id');
+            $stmt->execute(['status' => $status, 'id' => $projectId]);
+            if ($stmt->rowCount() === 0) {
+                $exists = $pdo->prepare('SELECT 1 FROM projects WHERE id = :id');
+                $exists->execute(['id' => $projectId]);
+                if (!$exists->fetchColumn()) {
+                    respond(['error' => 'Project not found.'], 404);
+                }
+            }
+            respond(['message' => 'Project status updated.']);
+        }
+    }
+
+    if ($resource === 'project-progress' && $method === 'PUT') {
+        $data = requestBody();
+        $projectId = filter_var($data['project_id'] ?? null, FILTER_VALIDATE_INT);
+        $studentId = filter_var($data['student_id'] ?? null, FILTER_VALIDATE_INT);
+        $progress = filter_var($data['progress'] ?? null, FILTER_VALIDATE_INT);
+        $progressNote = trim((string)($data['progress_note'] ?? ''));
+        if (!$projectId || $projectId < 1 || !$studentId || $studentId < 1) {
+            respond(['error' => 'A valid project and student id are required.'], 422);
+        }
+        if ($progress === false || $progress < 0 || $progress > 100) {
+            respond(['error' => 'Project progress must be between 0 and 100.'], 422);
+        }
+        if (mb_strlen($progressNote) > 500) {
+            respond(['error' => 'Progress notes must be at most 500 characters.'], 422);
+        }
+        $stmt = $pdo->prepare(
+            "UPDATE project_assignments pa
+             INNER JOIN projects p ON p.id = pa.project_id AND p.status = 'Active'
+             SET pa.progress = :progress, pa.progress_note = :progress_note
+             WHERE pa.project_id = :project_id AND pa.student_id = :student_id"
+        );
+        $stmt->execute([
+            'progress' => $progress,
+            'progress_note' => $progressNote !== '' ? $progressNote : null,
+            'project_id' => $projectId,
+            'student_id' => $studentId,
+        ]);
+        if ($stmt->rowCount() === 0) {
+            $assignmentStmt = $pdo->prepare(
+                'SELECT p.status FROM project_assignments pa
+                 INNER JOIN projects p ON p.id = pa.project_id
+                 WHERE pa.project_id = :project_id AND pa.student_id = :student_id'
+            );
+            $assignmentStmt->execute(['project_id' => $projectId, 'student_id' => $studentId]);
+            $projectStatus = $assignmentStmt->fetchColumn();
+            if ($projectStatus === false) {
+                respond(['error' => 'Project assignment not found.'], 404);
+            }
+            if ($projectStatus !== 'Active') {
+                respond(['error' => 'Progress can only be updated on active projects.'], 409);
+            }
+        }
+        respond(['message' => 'Project progress updated.']);
+    }
+
     if ($resource === 'students') {
         if ($method === 'GET') {
             $stmt = $pdo->query(

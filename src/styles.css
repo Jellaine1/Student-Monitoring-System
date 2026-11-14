@@ -2,16 +2,20 @@
 
 :root {
   font-family: 'DM Sans', sans-serif;
-  color: #35252c;
-  background: #faf7f8;
+  color: #1d2a3a;
+  background: #f5f9ff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   font-smooth: always;
-  --ink: #35252c;
-  --muted: #907c83;
-  --line: #f3e5e9;
-  --purple: #b8325c;
-  --purple-dark: #9e294d;
+  --ink: #1d2a3a;
+  --muted: #5d728b;
+  --line: #dfeaf7;
+  --purple: #f4c948;
+  --purple-dark: #d9aa10;
+  --blue: #1f5db3;
+  --blue-dark: #123f8b;
+  --blue-soft: #edf5ff;
+  --yellow-soft: #fff7d6;
 }
 
 * { box-sizing: border-box; }
@@ -255,53 +259,53 @@ h1 { color: #272a3c; font: 700 25px Manrope, sans-serif; letter-spacing: -.8px; 
   .legend-item { font-size: 9px; }
 }
 
-body { background: #faf7f8; color: #35252c; }
-.sidebar { border-color: #eee5e8; }
-.brand-dot, .text-button, .help-card button, .row-action { color: #b8325c; }
-.brand-mark, .button-primary { background: #b8325c; }
-.button-primary { box-shadow: 0 3px 8px #b8325c20; }
-.button-primary:hover { background: #9e294d; }
-.school-switcher, .help-card { background: #fcf8f9; border-color: #eee5e8; }
-.school-avatar, .help-icon, .nav-count { background: #f9e9ee; color: #a82d52; }
-.nav-item:hover { background: #fcf5f7; color: #9e294d; }
-.nav-item.active { background: #f9e9ee; color: #9e294d; }
-.topbar { background: rgba(255,255,255,.96); border-color: #eee5e8; }
-.top-search, .table-search { background: #fcfafb; border-color: #eee5e8; }
-.notification-button i { background: #c9446b; }
-.top-divider { background: #eee5e8; }
-.profile-avatar, .top-avatar { background: linear-gradient(145deg, #f5d2dc, #e9a6b9); color: #70263e; }
-.wave { color: #c9446b; }
-.lavender, .mint, .peach, .blue { background: #f9edf1; color: #b8325c; }
-.stat-decoration, .stat-decoration:after { border-color: #f6e9ed; }
-.donut { background: conic-gradient(#c9446b var(--rate), #f3e9ec 0); }
-.quick-action:hover, .attendance-choice:hover { background: #fcf5f7; }
-.inline-count { background: #f9e9ee; color: #a82d52; }
-.data-table th { background: #fbf8f9; border-color: #eee5e8; }
-.data-table td, .quick-action, .profile-row, .panel-footer { border-color: #f0e8eb; }
-.data-table tbody tr:hover { background: #fdfafb; }
-.avatar-0, .avatar-1, .avatar-2, .avatar-3, .avatar-4 { background: #f9edf1; color: #a83257; }
-.date-input, .attendance-choice { border-color: #eae1e5; }
+body { background: #f4f9ff; color: #1d2a3a; }
+.sidebar { border-color: #dfeaf7; }
+.brand-dot, .text-button, .help-card button, .row-action { color: #f4c948; }
+.brand-mark, .button-primary { background: #f4c948; }
+.button-primary { box-shadow: 0 3px 8px rgba(244, 201, 72, 0.28); }
+.button-primary:hover { background: #e0b52f; }
+.school-switcher, .help-card { background: #f8fbff; border-color: #dfeaf7; }
+.school-avatar, .help-icon, .nav-count { background: #fff5c2; color: #b38d00; }
+.nav-item:hover { background: #fff9de; color: #b38d00; }
+.nav-item.active { background: #fff3b8; color: #b38d00; }
+.topbar { background: rgba(255,255,255,.96); border-color: #dfeaf7; }
+.top-search, .table-search { background: #f7fbff; border-color: #dfeaf7; }
+.notification-button i { background: #1f5db3; }
+.top-divider { background: #dfeaf7; }
+.profile-avatar, .top-avatar { background: linear-gradient(145deg, #ffe9a8, #f4c948); color: #7a5a00; }
+.wave { color: #f4c948; }
+.lavender, .mint, .peach, .blue { background: #edf5ff; color: #1f5db3; }
+.stat-decoration, .stat-decoration:after { border-color: #e7f1ff; }
+.donut { background: conic-gradient(#1f5db3 var(--rate), #eaf2ff 0); }
+.quick-action:hover, .attendance-choice:hover { background: #f7fbff; }
+.inline-count { background: #edf5ff; color: #1f5db3; }
+.data-table th { background: #f7fbff; border-color: #dfeaf7; }
+.data-table td, .quick-action, .profile-row, .panel-footer { border-color: #e3edf9; }
+.data-table tbody tr:hover { background: #f9fcff; }
+.avatar-0, .avatar-1, .avatar-2, .avatar-3, .avatar-4 { background: #edf5ff; color: #1f5db3; }
+.date-input, .attendance-choice { border-color: #dfeaf7; }
 .form-grid input:focus, .form-grid select:focus, .date-input:focus, .top-search:focus-within, .table-search:focus-within {
-  border-color: #d58ba0;
-  box-shadow: 0 0 0 3px #b8325c14;
+  border-color: #9ec1f5;
+  box-shadow: 0 0 0 3px rgba(31, 93, 179, 0.12);
 }
-.modal-backdrop { background: #35252c66; }
-.modal { box-shadow: 0 20px 60px #35252c24; }
-.modal-actions { border-color: #eee5e8; }
+.modal-backdrop { background: rgba(29, 42, 58, 0.45); }
+.modal { box-shadow: 0 20px 60px rgba(29, 42, 58, 0.18); }
+.modal-actions { border-color: #dfeaf7; }
 
-.sidebar { box-shadow: 2px 0 16px #35252c05; }
+.sidebar { box-shadow: 2px 0 16px rgba(29, 42, 58, 0.04); }
 .school-switcher, .help-card, .panel, .stat-card, .modal {
   border-radius: 14px;
 }
 .panel, .stat-card {
-  border-color: #eee8eb;
-  box-shadow: 0 2px 8px #35252c05;
+  border-color: #e3edf9;
+  box-shadow: 0 2px 8px rgba(29, 42, 58, 0.04);
 }
 .content { padding-top: 40px; }
 .page-heading { margin-bottom: 28px; }
-h1 { color: #30232a; font-size: 28px; letter-spacing: -.9px; }
-.eyebrow { color: #8b727b; font-size: 10px; letter-spacing: 1.15px; }
-.heading-subtitle { color: #796a70; font-size: 13px; }
+h1 { color: #1d2a3a; font-size: 28px; letter-spacing: -.9px; }
+.eyebrow { color: #6780a0; font-size: 10px; letter-spacing: 1.15px; }
+.heading-subtitle { color: #59708b; font-size: 13px; }
 .button { font-size: 12px; min-height: 40px; }
 .nav-item { font-size: 13px; }
 .school-copy strong, .help-card strong, .profile-copy strong { font-size: 12px; }
@@ -312,33 +316,33 @@ h1 { color: #30232a; font-size: 28px; letter-spacing: -.9px; }
 .top-search, .table-search { min-height: 38px; }
 .stat-card { min-height: 148px; padding: 18px; }
 .stat-icon, .quick-icon { height: 38px; width: 38px; }
-.stat-label { color: #6f6066; font-size: 12px; margin-top: 16px; }
-.stat-value { color: #30232a; font-size: 28px; }
-.stat-note { color: #84747a; font-size: 11px; }
-.panel-heading h2, .attendance-toolbar h2 { color: #35252c; font-size: 14px; }
-.panel-heading p, .attendance-toolbar p { color: #84747a; font-size: 11px; }
-.data-table th { color: #75646b; font-size: 10px; }
-.data-table td { color: #574950; font-size: 12px; padding-bottom: 13px; padding-top: 13px; }
-.student-cell strong, .guardian-cell strong { color: #35252c; font-size: 12px; }
-.student-cell small, .guardian-cell small { color: #806f76; font-size: 11px; }
+.stat-label { color: #5d728b; font-size: 12px; margin-top: 16px; }
+.stat-value { color: #1d2a3a; font-size: 28px; }
+.stat-note { color: #7388a3; font-size: 11px; }
+.panel-heading h2, .attendance-toolbar h2 { color: #1d2a3a; font-size: 14px; }
+.panel-heading p, .attendance-toolbar p { color: #7388a3; font-size: 11px; }
+.data-table th { color: #5d728b; font-size: 10px; }
+.data-table td { color: #41536d; font-size: 12px; padding-bottom: 13px; padding-top: 13px; }
+.student-cell strong, .guardian-cell strong { color: #1d2a3a; font-size: 12px; }
+.student-cell small, .guardian-cell small { color: #6b7f99; font-size: 11px; }
 .status-pill, .attendance-choice { font-size: 11px; }
 .table-search { height: 38px; }
 .date-input { font-size: 12px; height: 38px; }
 .legend-item { font-size: 11px; }
 .legend-item strong { font-size: 11px; }
-.quick-action strong { color: #403039; font-size: 12px; }
-.quick-action small { color: #806f76; font-size: 11px; }
-.panel-footer { color: #75646b; font-size: 11px; }
+.quick-action strong { color: #1f2d3f; font-size: 12px; }
+.quick-action small { color: #6b7f99; font-size: 11px; }
+.panel-footer { color: #5d728b; font-size: 11px; }
 .text-button { font-size: 11px; }
-.app-footer { color: #806f76; font-size: 10px; }
-.form-grid label { color: #574950; font-size: 12px; }
+.app-footer { color: #6b7f99; font-size: 10px; }
+.form-grid label { color: #41536d; font-size: 12px; }
 .form-grid input, .form-grid select { font-size: 13px; height: 40px; }
-.modal-heading h2 { color: #30232a; }
-.toast { background: #35252c; }
+.modal-heading h2 { color: #1d2a3a; }
+.toast { background: #1d2a3a; }
 .button:focus-visible, .nav-item:focus-visible, .icon-button:focus-visible,
 .quick-action:focus-visible, .text-button:focus-visible, .row-action:focus-visible,
 .attendance-choice:focus-visible, .help-card button:focus-visible {
-  outline: 3px solid #d58ba0;
+  outline: 3px solid rgba(31, 93, 179, 0.3);
   outline-offset: 2px;
 }
 

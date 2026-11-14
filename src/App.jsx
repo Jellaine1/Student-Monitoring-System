@@ -202,7 +202,7 @@ function App() {
           {page === 'Overview' && (
             <>
               <div className="page-heading">
-                <div><p className="eyebrow">{dateLabel(date)}</p><h1> morning, Jordan <span className="wave">✦</span></h1><p className="heading-subtitle">Here’s what’s happening at your school today.</p></div>
+                <div><p className="eyebrow">{dateLabel(date)}</p><h1>Good morning, Jordan <span className="wave">✦</span></h1><p className="heading-subtitle">Here’s what’s happening at your school today.</p></div>
                 <button className="button button-primary" onClick={() => setModal({ student: null })}><Icon name="plus" size={17} /> Add new student</button>
               </div>
               <div className="stats-grid">

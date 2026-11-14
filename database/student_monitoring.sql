@@ -34,3 +34,15 @@ CREATE TABLE IF NOT EXISTS attendance (
   CONSTRAINT fk_attendance_student FOREIGN KEY (student_id)
     REFERENCES students (id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS announcements (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(160) NOT NULL,
+  body TEXT NOT NULL,
+  category ENUM('General', 'Urgent', 'Event') NOT NULL DEFAULT 'General',
+  is_pinned TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_announcements_pinned (is_pinned, created_at)
+) ENGINE=InnoDB;

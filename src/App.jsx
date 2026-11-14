@@ -32,6 +32,13 @@ function Icon({ name, size = 20 }) {
     arrow: <><path d="M7 17 17 7M7 7h10v10" /></>,
     more: <><circle cx="5" cy="12" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /></>,
     close: <><path d="m18 6-12 12M6 6l12 12" /></>,
+    megaphone: <><path d="m3 11 18-5v12L3 14v-3z" /><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" /><path d="M21 10v4" /></>,
+    pin: <><path d="M12 17v5" /><path d="M9 10.76V6h6v4.76a2 2 0 0 0 .59 1.42L18 15H6l2.41-2.82A2 2 0 0 0 9 10.76z" /></>,
+    check: <><path d="M20 6 9 17l-5-5" /></>,
+    edit: <><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></>,
+    trash: <><path d="M3 6h18" /><path d="M8 6V4h8v2" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6M14 11v6" /></>,
+    clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+    shield: <><path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z" /><path d="m9.5 12 1.8 1.8 3.2-3.6" /></>,
   };
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
 }
@@ -45,6 +52,106 @@ function dateLabel(date) {
 }
 
 function App() {
+  const [view, setView] = useState(() => (window.location.hash === '#/app' ? 'app' : 'landing'));
+  const [announcements, setAnnouncements] = useState([]);
+
+  const loadAnnouncements = useCallback(async () => {
+    try {
+      setAnnouncements(await api('announcements'));
+    } catch {
+      setAnnouncements([]);
+    }
+  }, []);
+
+  useEffect(() => { loadAnnouncements(); }, [loadAnnouncements]);
+
+  function enterApp() {
+    window.location.hash = '#/app';
+    setView('app');
+  }
+
+  function leaveApp() {
+    window.location.hash = '';
+    setView('landing');
+    loadAnnouncements();
+  }
+
+  return view === 'landing'
+    ? <Landing announcements={announcements} onEnter={enterApp} />
+    : <Dashboard announcements={announcements} onAnnouncementsChange={loadAnnouncements} onExit={leaveApp} />;
+}
+
+function Landing({ announcements, onEnter }) {
+  const year = new Date().getFullYear();
+  return (
+    <div className="landing">
+      <header className="landing-nav">
+        <a className="brand" href="#/" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+          <span className="brand-mark"><span /></span>
+          <span>classly<span className="brand-dot">.</span></span>
+        </a>
+        <nav className="landing-links">
+          <a href="#features">Features</a>
+          <a href="#announcements">Announcements</a>
+          <a href="#about">About</a>
+        </nav>
+        <button className="button button-primary" onClick={onEnter}>Get started <span aria-hidden="true">→</span></button>
+      </header>
+
+      <section className="landing-hero">
+        <p className="hero-badge"><span className="live-dot" /> Built for modern schools</p>
+        <h1>Attendance and student records,<br /><em>beautifully simple.</em></h1>
+        <p className="hero-lead">Classly gives your school one calm place to manage students, take daily attendance, and share announcements — all in real time.</p>
+        <div className="hero-cta">
+          <button className="button button-primary button-hero" onClick={onEnter}>Get started <span aria-hidden="true">→</span></button>
+          <a className="button button-hero-ghost" href="#features">Explore features</a>
+        </div>
+        <div className="hero-stats">
+          <div><strong>Fast</strong><span>Mark a whole class in seconds</span></div>
+          <div><strong>Real time</strong><span>Attendance summaries that update instantly</span></div>
+          <div><strong>Simple</strong><span>No training required for your staff</span></div>
+        </div>
+      </section>
+
+      <section className="landing-section" id="features">
+        <div className="landing-section-head">
+          <p className="eyebrow">WHY CLASsLY</p>
+          <h2>Everything your school needs, nothing it doesn’t</h2>
+        </div>
+        <div className="feature-grid">
+          <article className="feature-card"><span className="quick-icon lavender"><Icon name="users" /></span><h3>Student directory</h3><p>Keep every student profile, guardian contact, and enrollment status organized in one place.</p></article>
+          <article className="feature-card"><span className="quick-icon mint"><Icon name="calendar" /></span><h3>Daily attendance</h3><p>Mark present, late, or absent in a click, revisit any date, and watch the summaries add up.</p></article>
+          <article className="feature-card"><span className="quick-icon peach"><Icon name="chart" /></span><h3>Instant reports</h3><p>See attendance rates and follow-ups at a glance, so no student slips through the cracks.</p></article>
+          <article className="feature-card"><span className="quick-icon blue"><Icon name="megaphone" /></span><h3>Announcements</h3><p>Publish news, events, and urgent notices to your school community the moment they matter.</p></article>
+          <article className="feature-card"><span className="quick-icon lavender"><Icon name="pin" /></span><h3>Pinned updates</h3><p>Keep the most important message front and center for everyone who visits.</p></article>
+          <article className="feature-card"><span className="quick-icon mint"><Icon name="shield" /></span><h3>Safe by design</h3><p>Prepared statements and validated input keep your student records protected.</p></article>
+        </div>
+      </section>
+
+      <section className="landing-section" id="announcements">
+        <div className="landing-section-head">
+          <p className="eyebrow">WHAT’S NEW</p>
+          <h2>School announcements</h2>
+          <p className="landing-section-sub">The latest news and updates from Northwood Academy.</p>
+        </div>
+        <AnnouncementFeed announcements={announcements} />
+      </section>
+
+      <section className="landing-cta" id="about">
+        <h2>Ready to make your school day simpler?</h2>
+        <p>Open the Classly workspace to manage students, take attendance, and post announcements.</p>
+        <button className="button button-primary button-hero" onClick={onEnter}>Open the dashboard <span aria-hidden="true">→</span></button>
+      </section>
+
+      <footer className="landing-footer">
+        <div><strong>classly<span className="brand-dot">.</span></strong><span>© {year} Classly Education. All rights reserved.</span></div>
+        <div><a href="#features">Features</a><a href="#announcements">Announcements</a><a href="#about">About</a></div>
+      </footer>
+    </div>
+  );
+}
+
+function Dashboard({ announcements, onAnnouncementsChange, onExit }) {
   const [page, setPage] = useState('Overview');
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState([]);
@@ -129,6 +236,36 @@ function App() {
     }
   }
 
+  async function saveAnnouncement(event) {
+    event.preventDefault();
+    setError('');
+    const formData = new FormData(event.currentTarget);
+    const values = Object.fromEntries(formData.entries());
+    values.is_pinned = formData.get('is_pinned') ? 1 : 0;
+    try {
+      await api('announcements', {
+        method: modal.announcement ? 'PUT' : 'POST',
+        body: JSON.stringify(values),
+      }, modal.announcement ? `&id=${modal.announcement.id}` : '');
+      setModal(null);
+      showNotice(modal.announcement ? 'Announcement updated.' : 'Announcement published.');
+      await onAnnouncementsChange();
+    } catch (requestError) {
+      setError(requestError.message);
+    }
+  }
+
+  async function deleteAnnouncement(announcement) {
+    if (!window.confirm(`Delete "${announcement.title}"?`)) return;
+    try {
+      await api('announcements', { method: 'DELETE' }, `&id=${announcement.id}`);
+      showNotice('Announcement deleted.');
+      await onAnnouncementsChange();
+    } catch (requestError) {
+      setError(requestError.message);
+    }
+  }
+
   function updateAttendance(id, status) {
     setAttendance((rows) => rows.map((row) => row.student_id === id ? { ...row, attendance_status: status } : row));
   }
@@ -157,10 +294,11 @@ function App() {
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <a className="brand" href="#" onClick={(event) => { event.preventDefault(); setPage('Overview'); }}>
+        <a className="brand" href="#" onClick={(event) => { event.preventDefault(); onExit(); }}>
           <span className="brand-mark"><span /></span>
           <span>classly<span className="brand-dot">.</span></span>
         </a>
+        <button className="back-to-site" onClick={onExit}>← Back to website</button>
         <div className="school-switcher">
           <div className="school-avatar">N</div>
           <div className="school-copy"><strong>Northwood Academy</strong><span>School workspace</span></div>
@@ -172,15 +310,16 @@ function App() {
             ['Overview', 'grid'],
             ['Students', 'users'],
             ['Attendance', 'calendar'],
+            ['Announcements', 'megaphone'],
             ['Reports', 'chart'],
           ].map(([label, icon]) => (
             <button key={label} className={`nav-item ${page === label ? 'active' : ''}`} onClick={() => { setPage(label); setSearch(''); }}>
-              <Icon name={icon} size={18} /><span>{label}</span>{label === 'Students' && <span className="nav-count">{students.length}</span>}
+              <Icon name={icon} size={18} /><span>{label}</span>{label === 'Students' && <span className="nav-count">{students.length}</span>}{label === 'Announcements' && announcements.length > 0 && <span className="nav-count">{announcements.length}</span>}
             </button>
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="help-card"><div className="help-icon">?</div><strong>Need a hand?</strong><span>Visit our help center<br />for quick answers.</span><button onClick={() => showNotice('Help center: add, edit, or archive student records from the Students page.')}>Get help <Icon name="arrow" size={14} /></button></div>
+          <div className="help-card"><div className="help-icon">?</div><strong>Need a hand?</strong><span>Visit our help center<br />for quick answers.</span><button onClick={() => showNotice('Tip: post news from the Announcements page, and it appears on the public website automatically.')}>Get help <Icon name="arrow" size={14} /></button></div>
           <div className="profile-row"><div className="profile-avatar">{initialsName}</div><div className="profile-copy"><strong>Jordan Davis</strong><span>School administrator</span></div><button className="icon-button profile-more" aria-label="Profile options" onClick={() => showNotice('Signed in as school administrator.')}><Icon name="more" size={18} /></button></div>
         </div>
       </aside>
@@ -190,7 +329,7 @@ function App() {
           <div className="breadcrumbs"><span>Workspace</span><Icon name="chevron" size={14} /><strong>{page}</strong></div>
           <div className="top-actions">
             <label className="top-search"><Icon name="search" size={17} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search anything..." aria-label="Search" /><kbd>⌘ K</kbd></label>
-            <button className="icon-button notification-button" aria-label="Notifications" onClick={() => showNotice('You’re all caught up!')}><Icon name="bell" size={19} /><i /></button>
+            <button className="icon-button notification-button" aria-label="Notifications" onClick={() => { setPage('Announcements'); showNotice('Showing all school announcements.'); }}><Icon name="bell" size={19} /><i /></button>
             <div className="top-divider" />
             <div className="top-avatar">{initialsName}</div>
           </div>
@@ -228,7 +367,7 @@ function App() {
                   <div className="panel-heading"><div><h2>Quick actions</h2><p>Common tasks, right at your fingertips</p></div></div>
                   <button className="quick-action" onClick={() => setModal({ student: null })}><span className="quick-icon lavender"><Icon name="users" /></span><span><strong>Add a student</strong><small>Create a new student profile</small></span><Icon name="chevron" size={17} /></button>
                   <button className="quick-action" onClick={() => setPage('Attendance')}><span className="quick-icon mint"><Icon name="calendar" /></span><span><strong>Take attendance</strong><small>Mark today’s attendance</small></span><Icon name="chevron" size={17} /></button>
-                  <button className="quick-action" onClick={() => setPage('Reports')}><span className="quick-icon peach"><Icon name="chart" /></span><span><strong>View reports</strong><small>Explore student insights</small></span><Icon name="chevron" size={17} /></button>
+                  <button className="quick-action" onClick={() => setModal({ announcement: null })}><span className="quick-icon peach"><Icon name="megaphone" /></span><span><strong>New announcement</strong><small>Share news with the school</small></span><Icon name="chevron" size={17} /></button>
                 </section>
               </div>
               <section className="panel students-panel">
@@ -266,6 +405,18 @@ function App() {
               </section>
             </>
           )}
+          {page === 'Announcements' && (
+            <>
+              <div className="page-heading">
+                <div><p className="eyebrow">SCHOOL UPDATES</p><h1>Announcements</h1><p className="heading-subtitle">Publish news and notices. They appear instantly on the public website.</p></div>
+                <button className="button button-primary" onClick={() => setModal({ announcement: null })}><Icon name="plus" size={17} /> New announcement</button>
+              </div>
+              <section className="panel students-panel full-panel">
+                <div className="panel-heading"><div><h2>Published announcements <span className="inline-count">{announcements.length}</span></h2><p>Pinned updates are shown first on the website</p></div></div>
+                <AnnouncementAdmin announcements={announcements} onEdit={(announcement) => setModal({ announcement })} onDelete={deleteAnnouncement} />
+              </section>
+            </>
+          )}
           {page === 'Reports' && (
             <>
               <div className="page-heading"><div><p className="eyebrow">SCHOOL INSIGHTS</p><h1>Reports</h1><p className="heading-subtitle">A snapshot of enrollment and attendance for the selected day.</p></div><input className="date-input" type="date" value={date} onChange={(event) => setDate(event.target.value)} aria-label="Report date" /></div>
@@ -277,7 +428,8 @@ function App() {
         <footer className="app-footer"><span>© 2026 Classly Education</span><span>Made for better school days <span className="footer-heart">♥</span></span></footer>
       </main>
 
-      {modal && <StudentModal student={modal.student} error={error} onDismissError={() => setError('')} onClose={() => { setModal(null); setError(''); }} onSubmit={saveStudent} />}
+      {modal && modal.student !== undefined && <StudentModal student={modal.student} error={error} onDismissError={() => setError('')} onClose={() => { setModal(null); setError(''); }} onSubmit={saveStudent} />}
+      {modal && modal.announcement !== undefined && <AnnouncementModal announcement={modal.announcement} error={error} onDismissError={() => setError('')} onClose={() => { setModal(null); setError(''); }} onSubmit={saveAnnouncement} />}
     </div>
   );
 }
@@ -315,6 +467,82 @@ function StudentModal({ student, error, onDismissError, onClose, onSubmit }) {
       <div className="modal-actions"><button type="button" className="button button-quiet" onClick={onClose}>Cancel</button><button type="submit" className="button button-primary">{student ? 'Save changes' : 'Add student'}</button></div>
     </form>
   </section></div>;
+}
+
+function announcementDate(value) {
+  return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function categoryClass(category) {
+  return String(category || 'General').toLowerCase();
+}
+
+function AnnouncementFeed({ announcements }) {
+  if (!announcements.length) {
+    return <div className="announcement-empty"><span className="quick-icon lavender"><Icon name="megaphone" /></span><p>No announcements yet. Check back soon for school updates.</p></div>;
+  }
+  return (
+    <div className="announcement-feed">
+      {announcements.map((announcement) => (
+        <article key={announcement.id} className={`announcement-card ${announcement.is_pinned ? 'is-pinned' : ''}`}>
+          <div className="announcement-card-head">
+            <span className={`announcement-badge badge-${categoryClass(announcement.category)}`}>{announcement.category}</span>
+            {announcement.is_pinned ? <span className="pinned-flag"><Icon name="pin" size={13} /> Pinned</span> : <span className="announcement-date"><Icon name="clock" size={13} /> {announcementDate(announcement.created_at)}</span>}
+          </div>
+          <h3>{announcement.title}</h3>
+          <p>{announcement.body}</p>
+          <span className="announcement-date mobile-date">{announcementDate(announcement.created_at)}</span>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function AnnouncementAdmin({ announcements, onEdit, onDelete }) {
+  if (!announcements.length) {
+    return <div className="table-message-block">No announcements yet. Publish your first update to show it on the website.</div>;
+  }
+  return (
+    <div className="announcement-admin-list">
+      {announcements.map((announcement) => (
+        <article key={announcement.id} className="announcement-admin-row">
+          <div className="announcement-admin-main">
+            <div className="announcement-card-head">
+              <span className={`announcement-badge badge-${categoryClass(announcement.category)}`}>{announcement.category}</span>
+              {announcement.is_pinned && <span className="pinned-flag"><Icon name="pin" size={13} /> Pinned</span>}
+            </div>
+            <h3>{announcement.title}</h3>
+            <p>{announcement.body}</p>
+            <span className="announcement-date">Posted {announcementDate(announcement.created_at)}</span>
+          </div>
+          <div className="row-actions announcement-admin-actions">
+            <button className="row-action" onClick={() => onEdit(announcement)}>Edit</button>
+            <button className="row-action delete-action" onClick={() => onDelete(announcement)}>Delete</button>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function AnnouncementModal({ announcement, error, onDismissError, onClose, onSubmit }) {
+  return (
+    <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section className="modal" role="dialog" aria-modal="true" aria-labelledby="announcement-modal-title">
+        <div className="modal-heading"><div><p className="eyebrow">{announcement ? 'EDIT ANNOUNCEMENT' : 'NEW ANNOUNCEMENT'}</p><h2 id="announcement-modal-title">{announcement ? 'Edit announcement' : 'Create an announcement'}</h2></div><button className="icon-button" onClick={onClose} aria-label="Close"><Icon name="close" /></button></div>
+        {error && <div className="alert modal-alert" role="alert"><span>{error}</span><button onClick={onDismissError} aria-label="Dismiss error"><Icon name="close" size={16} /></button></div>}
+        <form onSubmit={onSubmit}>
+          <div className="form-grid announcement-form">
+            <label className="span-2">Title<input name="title" required maxLength="160" placeholder="e.g. Parent-teacher conference next week" defaultValue={announcement?.title || ''} /></label>
+            <label className="span-2">Message<textarea name="body" required rows="5" maxLength="2000" placeholder="Write the announcement your school will see…">{announcement?.body || ''}</textarea></label>
+            <label>Category<select name="category" defaultValue={announcement?.category || 'General'}><option>General</option><option>Urgent</option><option>Event</option></select></label>
+            <label className="pin-toggle"><span>Pin to top</span><input type="checkbox" name="is_pinned" defaultChecked={announcement?.is_pinned ? true : false} /><i className="switch" aria-hidden="true" /></label>
+          </div>
+          <div className="modal-actions"><button type="button" className="button button-quiet" onClick={onClose}>Cancel</button><button type="submit" className="button button-primary">{announcement ? 'Save changes' : 'Publish announcement'}</button></div>
+        </form>
+      </section>
+    </div>
+  );
 }
 
 export default App;

@@ -194,6 +194,76 @@ try {
         }
     }
 
+    if ($resource === 'announcements') {
+        if ($method === 'GET') {
+            $stmt = $pdo->query(
+                'SELECT id, title, body, category, is_pinned, created_at, updated_at
+                 FROM announcements
+                 ORDER BY is_pinned DESC, created_at DESC'
+            );
+            respond($stmt->fetchAll());
+        }
+
+        if ($method === 'POST' || $method === 'PUT') {
+            $data = requestBody();
+            $title = requiredString($data, 'title', 160);
+            $body = trim((string)($data['body'] ?? ''));
+            $category = (string)($data['category'] ?? 'General');
+            $isPinned = !empty($data['is_pinned']) ? 1 : 0;
+
+            if ($body === '') {
+                respond(['error' => 'Announcement body is required.'], 422);
+            }
+            if (!in_array($category, ['General', 'Urgent', 'Event'], true)) {
+                respond(['error' => 'Category must be General, Urgent, or Event.'], 422);
+            }
+
+            $values = [
+                'title' => $title,
+                'body' => $body,
+                'category' => $category,
+                'is_pinned' => $isPinned,
+            ];
+
+            if ($method === 'POST') {
+                $stmt = $pdo->prepare(
+                    'INSERT INTO announcements (title, body, category, is_pinned)
+                     VALUES (:title, :body, :category, :is_pinned)'
+                );
+                $stmt->execute($values);
+                respond(['id' => (int)$pdo->lastInsertId(), 'message' => 'Announcement published.'], 201);
+            }
+
+            $id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+            if (!$id || $id < 1) {
+                respond(['error' => 'A valid announcement id is required.'], 400);
+            }
+            $values['id'] = $id;
+            $stmt = $pdo->prepare(
+                'UPDATE announcements SET title = :title, body = :body, category = :category,
+                 is_pinned = :is_pinned WHERE id = :id'
+            );
+            $stmt->execute($values);
+            if ($stmt->rowCount() === 0 && !announcementExists($pdo, $id)) {
+                respond(['error' => 'Announcement not found.'], 404);
+            }
+            respond(['message' => 'Announcement updated.']);
+        }
+
+        if ($method === 'DELETE') {
+            $id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+            if (!$id || $id < 1) {
+                respond(['error' => 'A valid announcement id is required.'], 400);
+            }
+            $stmt = $pdo->prepare('DELETE FROM announcements WHERE id = :id');
+            $stmt->execute(['id' => $id]);
+            if ($stmt->rowCount() === 0) {
+                respond(['error' => 'Announcement not found.'], 404);
+            }
+            respond(['message' => 'Announcement deleted.']);
+        }
+    }
+
     respond(['error' => 'Endpoint not found.'], 404);
 } catch (PDOException $error) {
     if (isset($pdo) && $pdo->inTransaction()) {
@@ -212,6 +282,13 @@ try {
 function studentExists(PDO $pdo, int $id): bool
 {
     $stmt = $pdo->prepare('SELECT 1 FROM students WHERE id = :id');
+    $stmt->execute(['id' => $id]);
+    return (bool)$stmt->fetchColumn();
+}
+
+function announcementExists(PDO $pdo, int $id): bool
+{
+    $stmt = $pdo->prepare('SELECT 1 FROM announcements WHERE id = :id');
     $stmt->execute(['id' => $id]);
     return (bool)$stmt->fetchColumn();
 }

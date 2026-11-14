@@ -40,6 +40,8 @@ This starts both the Vite frontend and the PHP API using XAMPP's PHP executable 
 
 ## Features
 
+- Public landing page with a live school announcements feed.
+- Administrators can create, edit, pin, and delete announcements from the Announcements page; they appear on the landing page immediately.
 - Add, edit, search, and remove student records.
 - Store grade, section, contact email, guardian details, and enrollment status.
 - Mark active students present, late, or absent by date; update or revisit saved attendance.

@@ -46,3 +46,30 @@ CREATE TABLE IF NOT EXISTS announcements (
   PRIMARY KEY (id),
   INDEX idx_announcements_pinned (is_pinned, created_at)
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS projects (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  title VARCHAR(120) NOT NULL,
+  subject VARCHAR(80) NOT NULL,
+  description TEXT NULL,
+  due_date DATE NOT NULL,
+  status ENUM('Active', 'Completed', 'Archived') NOT NULL DEFAULT 'Active',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX idx_projects_status_due_date (status, due_date)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS project_assignments (
+  project_id INT UNSIGNED NOT NULL,
+  student_id INT UNSIGNED NOT NULL,
+  progress TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  progress_note VARCHAR(500) NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (project_id, student_id),
+  INDEX idx_project_assignments_student (student_id),
+  CONSTRAINT fk_project_assignments_project FOREIGN KEY (project_id)
+    REFERENCES projects (id) ON DELETE CASCADE,
+  CONSTRAINT fk_project_assignments_student FOREIGN KEY (student_id)
+    REFERENCES students (id) ON DELETE CASCADE
+) ENGINE=InnoDB;
